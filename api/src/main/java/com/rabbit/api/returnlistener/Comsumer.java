@@ -1,37 +1,37 @@
-package com.rabbit.api.Consumer;
+package com.rabbit.api.returnlistener;
 
-import com.rabbitmq.client.AMQP;
+import com.rabbit.api.Consumer.MyConsumer;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.QueueingConsumer;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Date:2018/10/28
- * Author:gyc
- * Desc:
+ * project name : rabbitmq
+ * Date:2018/10/29
+ * Author: yc.guo
+ * DESC:
  */
-public class Consumer {
+public class Comsumer {
 
     public static void main(String[] args) throws IOException, TimeoutException {
         ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
+        connectionFactory.setHost("192.168.10.114");
         connectionFactory.setPort(5672);
         connectionFactory.setVirtualHost("/");
+
         Connection connection = connectionFactory.newConnection();
         Channel channel = connection.createChannel();
 
 
-        String exchangeName = "rabbit.exchange";
+        String exchangeName = "returnExchange";
         String exchangeType = "topic";
-        String queueName = "exchageQueue";
-        String routeKey = "rabbit.*";
-        String queueName1 = "myqueue";
+        String queueName = "returnQueue";
+        String routeKey = "return.#";
 
-
-        //1.参数是交换机的名字，2.参数是交换机的类型，3.是是否持久化，4.是否自动删除
         channel.exchangeDeclare(exchangeName,exchangeType,true,false,null);
         channel.queueDeclare(queueName,true,false,false,null);
 
@@ -39,6 +39,7 @@ public class Consumer {
 
 
         channel.basicConsume(queueName,true,new MyConsumer(channel));
-
     }
+    
+    
 }

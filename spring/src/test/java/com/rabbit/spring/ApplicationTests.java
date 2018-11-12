@@ -1,15 +1,19 @@
 package com.rabbit.spring;
 
-import com.rabbitmq.client.AMQP;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbit.spring.entity.Order;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -84,24 +88,82 @@ public class ApplicationTests {
 	@Test
 	public void sendMessage1(){
 
+			MessageProperties messageProperties = new MessageProperties();
+
+			messageProperties.setContentType("text/plain");
+			messageProperties.setHeader("头部信息","abc");
+
+
+			Message message = new Message("abcd".getBytes(),messageProperties);
+
+
+			rabbitTemplate.send("topic001","spring.abc",message);
+
+//		rabbitTemplate.convertAndSend("topic001","spring.amqp","hello word topic001");
+//		rabbitTemplate.convertAndSend("topic001","rabbit.amqp","hello word topic001");
+
+
+		}
+
+		@Test
+		public void sendMessageJson() throws JsonProcessingException {
+
+
+			Order order = new Order();
+			new Order().setId("001");
+			order.setName("消息订单");
+			order.setContent("描述信息");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(order);
+		System.err.println("order 4 json: " + json);
+
 		MessageProperties messageProperties = new MessageProperties();
+		//这里注意一定要修改contentType为 application/json
+		messageProperties.setContentType("application/json");
+		Message message = new Message(json.getBytes(), messageProperties);
 
-		messageProperties.setContentType("text/plan");
-		messageProperties.setHeader("头部信息","abc");
-
-
-		Message message = new Message("abcd".getBytes(),messageProperties);
-
-
-		rabbitTemplate.send("topic001","spring.abc",message);
-
-		rabbitTemplate.convertAndSend("topic001","spring.amqp","hello word topic001");
-		rabbitTemplate.convertAndSend("topic001","rabbit.amqp","hello word topic001");
-
-
+		rabbitTemplate.send("topic001", "spring.order", message);
 	}
 
 
+
+	@Test
+	public void testSendJavaMessage() throws Exception {
+
+		Order order = new Order();
+		order.setId("001");
+		order.setName("订单消息");
+		order.setContent("订单描述信息");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(order);
+		System.err.println("order 4 json: " + json);
+
+		MessageProperties messageProperties = new MessageProperties();
+		//这里注意一定要修改contentType为 application/json
+		messageProperties.setContentType("application/json");
+		messageProperties.getHeaders().put("__TypeId__", "com.rabbit.spring.entity.Order");
+		Message message = new Message(json.getBytes(), messageProperties);
+
+		rabbitTemplate.send("topic001", "spring.order", message);
+	}
+
+
+
+	@Test
+	public void testSendExtConverterMessage() throws Exception {
+			byte[] body = Files.readAllBytes(Paths.get("C:\\Users\\83673\\Desktop", "sql联系orcal.sql"));
+			MessageProperties messageProperties = new MessageProperties();
+			messageProperties.setContentType("image/png");
+			messageProperties.getHeaders().put("extName", "sql");
+			Message message = new Message(body, messageProperties);
+			rabbitTemplate.send("", "image_queue", message);
+
+//		byte[] body = Files.readAllBytes(Paths.get("d:/002_books", "mysql.pdf"));
+//		MessageProperties messageProperties = new MessageProperties();
+//		messageProperties.setContentType("application/pdf");
+//		Message message = new Message(body, messageProperties);
+//		rabbitTemplate.send("", "pdf_queue", message);
+	}
 
 
 

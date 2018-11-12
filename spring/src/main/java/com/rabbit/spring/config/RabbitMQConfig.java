@@ -1,22 +1,24 @@
 package com.rabbit.spring.config;
 
+import com.rabbit.spring.adapt.MessageAdapt;
+import com.rabbit.spring.convert.ImageMessageConvert;
+import com.rabbit.spring.convert.TextMessageConvert;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.ConsumerTagStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.amqp.support.converter.ContentTypeDelegatingMessageConverter;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import javax.management.MXBean;
 import java.util.UUID;
 
 /**
@@ -35,7 +37,7 @@ public class RabbitMQConfig {
     public ConnectionFactory connectionFactory(){
 
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setHost("192.168.1.102");
+        connectionFactory.setHost("localhost");
         connectionFactory.setPort(5672);
         connectionFactory.setUsername("guest");
         connectionFactory.setPassword("guest");
@@ -170,11 +172,52 @@ public class RabbitMQConfig {
         container.setChannelAwareMessageListener(new ChannelAwareMessageListener() {
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
-                log.info("收到的信息是："+new String(message.getBody()));
+                log.info("收到的信息是："+new String(message.getBody(),"utf-8"));
                 log.info(channel.toString());
             }
         });
 
+
+        MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(new MessageAdapt());
+
+
+        //        messageListenerAdapter.addQueueOrTagToMethodName("queue001","method1");
+
+
+        // 设置json的转换
+//        Jackson2JsonMessageConverter jackson2JsonMessageConverter = new Jackson2JsonMessageConverter();
+//
+//        messageListenerAdapter.setMessageConverter(new Jackson2JsonMessageConverter());
+
+//        messageListenerAdapter.setMessageConverter(new ImageMessageConvert());
+
+//
+//        ContentTypeDelegatingMessageConverter converter = new ContentTypeDelegatingMessageConverter();
+//
+//
+//        TextMessageConvert textConvert = new TextMessageConvert();
+//
+//        converter.addDelegate("text", textConvert);
+//        converter.addDelegate("html/text", textConvert);
+//        converter.addDelegate("xml/text", textConvert);
+//        converter.addDelegate("text/plain", textConvert);
+//
+//
+//        Jackson2JsonMessageConverter jsonConvert = new Jackson2JsonMessageConverter();
+//
+//        converter.addDelegate("json", jsonConvert);
+//        converter.addDelegate("application/json", jsonConvert);
+//
+//
+//        ImageMessageConvert imageConverter = new ImageMessageConvert();
+//        converter.addDelegate("image/png", imageConverter);
+//        converter.addDelegate("image", imageConverter);
+//
+//
+//
+//        messageListenerAdapter.setMessageConverter(converter);
+//
+//        container.setMessageListener(messageListenerAdapter);
 
         return container;
 
