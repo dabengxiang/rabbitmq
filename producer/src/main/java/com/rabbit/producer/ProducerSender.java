@@ -1,5 +1,6 @@
 package com.rabbit.producer;
 
+import com.rabbit.entity.Order;
 import com.rabbitmq.client.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;
@@ -58,8 +59,16 @@ public class ProducerSender {
         rabbitTemplate.setReturnCallback(returnCallback);
         //id + 时间戳 全局唯一 
         CorrelationData correlationData = new CorrelationData("1234567890");
-        rabbitTemplate.convertAndSend("topic001", "spring.abc", msg, correlationData);
+        rabbitTemplate.convertAndSend("exchange11", "springboot.*", msg, correlationData);
         
+    }
+    
+    
+    public  void sendOrder(Order order){
+        rabbitTemplate.setConfirmCallback(confirmCallback);
+        rabbitTemplate.setReturnCallback(returnCallback);
+        CorrelationData correlationData = new CorrelationData("order123");
+        rabbitTemplate.convertAndSend("exchange11", "springboot.*", order, correlationData);
     }
 
 }
