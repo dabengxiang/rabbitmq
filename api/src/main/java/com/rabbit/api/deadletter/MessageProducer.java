@@ -8,10 +8,11 @@ import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 /**
+ *
+ * 死信队列
  * Date:2018/10/28
  * Author:gyc
  * Desc:

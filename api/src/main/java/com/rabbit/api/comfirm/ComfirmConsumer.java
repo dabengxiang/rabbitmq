@@ -18,9 +18,9 @@ public class ComfirmConsumer  {
 
     
     
-    public static void main(String[] args) throws IOException, TimeoutException {
+    public static void main(String[] args) throws IOException, TimeoutException, InterruptedException {
         ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("192.168.10.114");
+        connectionFactory.setHost("127.0.0.1");
         connectionFactory.setPort(5672);
         connectionFactory.setVirtualHost("/");
         Connection connection = connectionFactory.newConnection();
@@ -36,11 +36,8 @@ public class ComfirmConsumer  {
         
         channel.queueBind(queueName,exchangeName,keyRoute);
         
-        channel.basicConsume(queueName,true,new MyConsumer(channel));
-        
-        
-        
-        
+        channel.basicConsume(queueName,false,new MyConsumer(channel));
+
         
     }
 }

@@ -15,7 +15,7 @@ public class Producer {
     public static void main(String[] args) throws IOException, TimeoutException {
 
         ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("192.168.10.114");
+        connectionFactory.setHost("127.0.0.1");
         connectionFactory.setPort(5672);
         connectionFactory.setVirtualHost("/");
 
@@ -47,7 +47,7 @@ public class Producer {
 
 
         for (int i = 0; i < 6; i++) {
-            channel.basicPublish(exchange,errorRouteKey,true,null,msg.getBytes());
+            channel.basicPublish(exchange,routeKey,true,null,msg.getBytes());
             
         }
         
