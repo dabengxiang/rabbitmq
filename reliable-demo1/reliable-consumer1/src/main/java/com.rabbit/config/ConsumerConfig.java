@@ -37,6 +37,10 @@ public class ConsumerConfig {
     public String queue2Name;
 
 
+    @Value("${rabbitmq.routeKey}")
+    public String routeKey;
+
+
     /**
      *
       * @return
@@ -61,7 +65,7 @@ public class ConsumerConfig {
 
     @Bean
     public Binding binding(@Qualifier("RELIABLE-EXCHANGE")DirectExchange exchange,@Qualifier("RELIABLE-QUEUE1")Queue queue) {
-        return BindingBuilder.bind(queue).to(exchange).with("reliable-Key");
+        return BindingBuilder.bind(queue).to(exchange).with(routeKey);
 
     }
 
