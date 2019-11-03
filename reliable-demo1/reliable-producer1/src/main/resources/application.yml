@@ -7,3 +7,30 @@ spring:
     port: 5672
     username: guest
     password: guest
+    publisher-confirms: true  #设置确认模式
+    publisher-returns: true   #设置返回模式
+    template:
+      mandatory: true
+
+
+
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://localhost/sqltest?useUnicode=true&characterEncoding=utf8
+    driver-class-name: com.mysql.jdbc.Driver
+mybatis-plus:
+  configuration:
+#    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      table-underline: false
+
+
+
+
+
+#mybatis-plus:
+#  mapper-locations: classpath:mybatis/mapper/*.xml
+

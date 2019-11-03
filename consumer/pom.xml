@@ -6,8 +6,8 @@
 
     <groupId>com.rabbit</groupId>
     <artifactId>consumer</artifactId>
+    <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
-
 
 
     <parent>

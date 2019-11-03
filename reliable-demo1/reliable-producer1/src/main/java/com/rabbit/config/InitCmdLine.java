@@ -1,6 +1,8 @@
 package com.rabbit.config;
 
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +35,11 @@ public class InitCmdLine implements CommandLineRunner  {
 
     @Override
     public void run(String... args) throws Exception {
-        rabbitTemplate.convertAndSend(exChageName,routeKey,"123");
+
+        CorrelationData correlationData = new CorrelationData();
+        correlationData.setId("1");
+        rabbitTemplate.convertAndSend(exChageName,routeKey,"123",correlationData);
+
+
     }
 }
